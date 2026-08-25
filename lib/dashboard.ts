@@ -45,6 +45,7 @@ export interface DashboardHolding {
   status: string;
   entryDate: string;
   exitDate: string | null;
+  spark: number[];
 }
 
 export interface DashboardData {
@@ -167,10 +168,15 @@ export async function getDashboardData(): Promise<DashboardData | null> {
         .reduce((a, h) => a + (valueOfHolding(h, asOf, adjBook) ?? 0), 0)
     : 0;
 
+  const snapDates = snapshots.map((s) => s.date);
   const holdings: DashboardHolding[] = (holdingRows as Array<Record<string, unknown>>).map((r) => {
     const h = holdingsAll.find((x) => x.id === (r.id as number))!;
     const value = asOf ? valueOfHolding(h, asOf, adjBook) : null;
     const alloc = Number(r.allocation);
+    const spark = snapDates
+      .filter((d) => d >= h.entryDate && (h.exitDate == null || d <= h.exitDate))
+      .map((d) => adjBook.onOrBefore(h.ticker, d))
+      .filter((v): v is number => v != null);
     return {
       ticker: r.ticker as string,
       displayTicker: r.display_ticker as string,
@@ -190,6 +196,7 @@ export async function getDashboardData(): Promise<DashboardData | null> {
       status: r.status as string,
       entryDate: isoDate(r.entry_date),
       exitDate: r.exit_date ? isoDate(r.exit_date) : null,
+      spark,
     };
   });
 

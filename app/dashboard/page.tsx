@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import Nav from '@/components/Nav';
 import EquityCurveChart from '@/components/EquityCurveChart';
 import RefreshButton from '@/components/RefreshButton';
+import Sparkline from '@/components/Sparkline';
 import { getDashboardData } from '@/lib/dashboard';
 import { getFredSeries } from '@/lib/fred';
 import { fmtMoney, fmtNum, fmtPct, fmtSignedMoney, fmtSignedPct } from '@/lib/format';
@@ -135,6 +136,7 @@ export default async function DashboardPage() {
                   <th className="px-4 py-2 text-right font-medium">Value</th>
                   <th className="px-4 py-2 text-right font-medium">Gain $</th>
                   <th className="px-4 py-2 text-right font-medium">Gain %</th>
+                  <th className="px-4 py-2 text-right font-medium">Trend</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-100">
@@ -155,6 +157,11 @@ export default async function DashboardPage() {
                     </td>
                     <td className={`px-4 py-2 text-right tabular-nums ${h.gainPct != null && h.gainPct < 0 ? 'text-red-600' : 'text-emerald-600'}`}>
                       {fmtSignedPct(h.gainPct)}
+                    </td>
+                    <td className="px-4 py-2">
+                      <div className="flex justify-end">
+                        <Sparkline data={h.spark} />
+                      </div>
                     </td>
                   </tr>
                 ))}
