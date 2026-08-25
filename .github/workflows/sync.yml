@@ -1,0 +1,22 @@
+name: Daily price sync
+
+# Primary scheduler (Vercel Hobby cron is once/day + approximate, so GitHub
+# Actions drives the reliable weekday-evening sync). Runs after the US close;
+# the sync is idempotent + self-healing, so exact timing doesn't matter.
+on:
+  schedule:
+    - cron: '0 23 * * 1-5' # 23:00 UTC, Mon–Fri (~6–7pm ET, after close settles)
+  workflow_dispatch: {} # allow manual runs from the Actions tab
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger /api/cron
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl -fsS -X GET "$APP_URL/api/cron" \
+            -H "Authorization: Bearer $CRON_SECRET" | head -c 500
+          echo
