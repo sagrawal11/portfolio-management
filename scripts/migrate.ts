@@ -18,20 +18,13 @@ async function main() {
 
   const schema = readFileSync(join(here, '..', 'lib', 'schema.sql'), 'utf8');
 
-  // Split into statements on `;`. Our schema has no semicolons inside statement
-  // bodies (no function definitions / string literals containing `;`), so a
-  // naive split is safe. Drop comment-only / empty fragments.
+  // Strip line comments FIRST (a comment may contain a `;`), then split on `;`.
+  // Our schema has no semicolons inside statement bodies or string literals.
   const statements = schema
+    .replace(/--[^\n]*/g, '')
     .split(';')
     .map((s) => s.trim())
-    .filter(
-      (s) =>
-        s.length > 0 &&
-        !s.split('\n').every((l) => {
-          const t = l.trim();
-          return t.length === 0 || t.startsWith('--');
-        }),
-    );
+    .filter((s) => s.length > 0);
 
   console.log(`Applying ${statements.length} statements...`);
   for (const stmt of statements) {
