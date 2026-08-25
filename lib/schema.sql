@@ -78,13 +78,16 @@ CREATE TABLE IF NOT EXISTS transactions (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- The graded "what happened & why" notes.
+-- Journal notes. `source` = 'manual' (your graded entries) or 'auto' (the
+-- autonomous daily brief). Auto briefs are a reading aid, kept distinct.
 CREATE TABLE IF NOT EXISTS journal_entries (
   id         SERIAL PRIMARY KEY,
   date       DATE NOT NULL,
   note       TEXT NOT NULL,
+  source     TEXT NOT NULL DEFAULT 'manual',
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+ALTER TABLE journal_entries ADD COLUMN IF NOT EXISTS source TEXT NOT NULL DEFAULT 'manual';
 
 -- Observability for cron / manual refresh ("did the sync run?").
 CREATE TABLE IF NOT EXISTS sync_runs (

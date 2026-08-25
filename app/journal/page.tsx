@@ -6,11 +6,12 @@ export const dynamic = 'force-dynamic';
 
 export default async function JournalPage() {
   const rows = await db()`
-    SELECT id, date::text AS date, note FROM journal_entries ORDER BY date DESC, id DESC`;
-  const entries: Entry[] = (rows as { id: number; date: string; note: string }[]).map((r) => ({
+    SELECT id, date::text AS date, note, source FROM journal_entries ORDER BY date DESC, id DESC`;
+  const entries: Entry[] = (rows as { id: number; date: string; note: string; source: string }[]).map((r) => ({
     id: r.id,
     date: r.date,
     note: r.note,
+    source: r.source,
   }));
   const today = new Date().toISOString().slice(0, 10);
 

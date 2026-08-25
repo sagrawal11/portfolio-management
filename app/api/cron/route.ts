@@ -1,5 +1,6 @@
 import { type NextRequest } from 'next/server';
 import { syncAndRecompute } from '@/lib/sync';
+import { generateDailyBrief } from '@/lib/brief';
 
 // Triggered by the GitHub Actions workflow (primary) and the Vercel cron backup,
 // both sending `Authorization: Bearer <CRON_SECRET>`. Not protected by the
@@ -15,7 +16,14 @@ export async function GET(req: NextRequest) {
   }
   try {
     const result = await syncAndRecompute('cron');
-    return Response.json(result);
+    // Auto-journal brief, best-effort: a brief failure must not fail the sync.
+    let brief: unknown;
+    try {
+      brief = await generateDailyBrief('cron');
+    } catch (e) {
+      brief = { ok: false, error: (e as Error).message };
+    }
+    return Response.json({ ...result, brief });
   } catch (e) {
     return Response.json({ ok: false, error: (e as Error).message }, { status: 500 });
   }
