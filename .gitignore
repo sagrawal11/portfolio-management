@@ -42,3 +42,9 @@ yarn-error.log*
 next-env.d.ts
 .env*.local
 .gstack/
+
+# local-only analysis scripts (contain classmates' data; kept out of the public repo)
+/scripts/backtest.ts
+/scripts/optimize.ts
+/scripts/sweep.ts
+/scripts/robustness.ts

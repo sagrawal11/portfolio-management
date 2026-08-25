@@ -9,7 +9,6 @@
     "lint": "eslint",
     "migrate": "tsx scripts/migrate.ts",
     "seed": "tsx scripts/seed.ts",
-    "backtest": "tsx scripts/backtest.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
