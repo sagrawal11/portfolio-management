@@ -9,6 +9,7 @@
     "lint": "eslint",
     "migrate": "tsx scripts/migrate.ts",
     "seed": "tsx scripts/seed.ts",
+    "swap-eval": "tsx scripts/swap-eval.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
